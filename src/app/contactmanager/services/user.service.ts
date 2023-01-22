@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, throwError } from 'rxjs';
 import { User } from '../models/user';
 
 @Injectable({
@@ -18,7 +18,6 @@ export class UserService {
     this.dataStore = { users: [] };
     this.users = new BehaviorSubject<User[]>([]);
    }
-
 
    getUsers(): Observable<User[]> {
     if (!this.dataStore.users.length  || this.dataStore.users.length == 0)
@@ -40,6 +39,13 @@ export class UserService {
 
    getUserById(id: number) {
     return this.dataStore.users.find(x => x.id == id);
+   }
+
+   addUser(user: User): Observable<User> {
+    user.id = 5;
+    this.dataStore.users.push(user);
+    this.users.next(Object.assign({}, this.dataStore).users);
+    return of(user);
    }
 
    private handleError(err: HttpErrorResponse) {
